@@ -4,6 +4,7 @@ const abiCoder = require("web3-eth-abi");
 const state = {
   savedABIs: [],
   methodIDs: {},
+  keepNonDecodedLogs: false
 };
 
 function _getABIs() {
@@ -201,7 +202,15 @@ function _decodeLogs(logs) {
         address: logItem.address,
       };
     }
-  });
+  }).filter(decoded => state.keepNonDecodedLogs || decoded);
+}
+
+function _keepNonDecodedLogs(){
+  state.keepNonDecodedLogs = true
+}
+
+function _discardNonDecodedLogs(){
+  state.keepNonDecodedLogs = false
 }
 
 module.exports = {
@@ -211,4 +220,6 @@ module.exports = {
   decodeMethod: _decodeMethod,
   decodeLogs: _decodeLogs,
   removeABI: _removeABI,
+  keepNonDecodedLogs: _keepNonDecodedLogs,
+  discardNonDecodedLogs: _discardNonDecodedLogs
 };
